@@ -2,7 +2,12 @@ import { Expense } from "../models/expense.model.js";
 
 const fetchExpenses = async (req, res) => {
     try {
-        const expenses = await Expense.find().sort({ date: -1 });
+        const userId = req.userId;
+        if (!userId) {
+            return res.status(400).json({ message: "No userId provided" });
+        }
+
+        const expenses = await Expense.find({ owner: userId }).sort({ date: -1 });
 
         if (!expenses) {
             return res.status(404).json({ message: "No expenses found!", expenses });
@@ -25,7 +30,8 @@ const addExpense = async (req, res) => {
         const newExpense = new Expense({
             title,
             amount,
-            category
+            category,
+            owner: req.userId
         });
         const savedExpense = await newExpense.save();
         res.status(201).json({ message: "Expense saved", savedExpense });
@@ -37,12 +43,17 @@ const addExpense = async (req, res) => {
 
 const deleteExpense = async (req, res) => {
     try {
-        const expense = await Expense.findByIdAndDelete(req.params.id);
+        const userId = req.userId;
+        if (!userId) {
+            return res.status(400).json({ message: "No userId provided" });
+        }
+
+        const expense = await Expense.findOneAndDelete({ owner: userId, _id: req.params.expenseId }).select('title amount category date -_id');
         if (!expense) {
             return res.status(404).json({ message: "Expense not found" });
         }
 
-        res.status(200).json({ message: "Expense deleted" });
+        res.status(200).json({ message: "Expense deleted", deletedExpense: expense });
     } catch (err) {
         res.status(500).json({ message: "Server Error! Unable to delete expense", error: err });
     }

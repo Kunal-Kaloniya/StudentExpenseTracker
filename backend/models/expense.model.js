@@ -21,6 +21,11 @@ const expenseSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
-}, {timestamps: true});
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    }
+}, { timestamps: true });
 
 export const Expense = mongoose.model("Expense", expenseSchema);
