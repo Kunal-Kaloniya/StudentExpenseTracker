@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import { loginUser } from "../helper/api.js";
 
 export const useAuthStore = create(
     persist(
@@ -7,14 +8,20 @@ export const useAuthStore = create(
             currentUser: null,
             userProfiles: [],
 
-            login: (username) => {
-                const { userProfiles } = get();
+            login: async (username) => {
+                try {
+                    const { userProfiles } = get();
 
-                if (!userProfiles.includes(username)) {
-                    set({ userProfiles: [...userProfiles, username] });
+                    const response = await loginUser(username);
+
+                    if (!userProfiles.includes(username)) {
+                        set({ userProfiles: [...userProfiles, response.data.username] });
+                    }
+
+                    set({ currentUser: response.data.username });
+                } catch (err) {
+                    console.error("Login Error:", err.response?.data?.message || err.message);
                 }
-
-                set({ currentUser: username });
             },
 
             logout: () => set({ currentUser: null }),
