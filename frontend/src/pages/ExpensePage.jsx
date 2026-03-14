@@ -1,39 +1,19 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { toast } from 'react-toastify';
-
+import { useEffect } from 'react';
+import { useAuthStore } from '../store/useAuthStore.js';
+import { useExpenseStore } from '../store/useExpenseStore.js';
 import ExpenseForm from '../components/ExpenseForm.jsx';
 import ExpenseChart from '../components/ExpenseChart.jsx';
 import ExpenseList from '../components/ExpenseList.jsx';
 
 export default function ExpensePage() {
-
-  const [expenses, setExpenses] = useState([]);
-
-  const fetchExpenses = async () => {
-    try {
-      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/expenses/fetch-expense`);
-      setExpenses(response.data.expenses || response.data);
-    } catch (error) {
-      console.error("Failed to fetch expenses", error);
-    }
-  };
+  const currentUser = useAuthStore((state) => state.currentUser);
+  const getAllExpenses = useExpenseStore((state) => state.getAllExpenses);
 
   useEffect(() => {
-    fetchExpenses();
-  }, []);
+    if (!currentUser) return;
 
-  const handleDeleteExpense = async (id) => {
-    try {
-      const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/api/expenses/delete-expense/${id}`);
-      toast.success(response.data.message || "Expense deleted");
-
-      fetchExpenses();
-
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Network Error! Please try later");
-    }
-  }
+    getAllExpenses();
+  }, [currentUser]);
 
   return (
     <div className="min-h-screen w-4/5 bg-gray-50 p-8 font-sans text-gray-800">
@@ -47,17 +27,14 @@ export default function ExpensePage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
           <div className="lg:col-span-1">
-            <ExpenseForm onExpenseAdded={fetchExpenses} />
+            <ExpenseForm />
           </div>
 
           <div className="lg:col-span-2 flex flex-col gap-8">
 
-            <ExpenseChart expenses={expenses} />
+            <ExpenseChart />
 
-            <ExpenseList
-              expenses={expenses}
-              onDeleteExpense={handleDeleteExpense}
-            />
+            <ExpenseList />
 
           </div>
         </div>

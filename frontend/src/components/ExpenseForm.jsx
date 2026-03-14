@@ -1,9 +1,16 @@
 import axios from "axios";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import { useExpenseStore } from "../store/useExpenseStore.js";
+import { useShallow } from "zustand/react/shallow";
 
-export default function ExpenseForm({ onExpenseAdded }) {
-
+export default function ExpenseForm() {
+    const { addExpense, getAllExpenses } = useExpenseStore(
+        useShallow((state) => ({
+            addExpense: state.addExpense,
+            getAllExpenses: state.getAllExpenses
+        }))
+    );
     const [form, setForm] = useState({
         title: "",
         amount: 0,
@@ -32,21 +39,14 @@ export default function ExpenseForm({ onExpenseAdded }) {
             return;
         }
 
-        try {
-            const payload = { ...form, amount: Number(form.amount) };
-            const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/expenses/add-expense`, payload);
-            toast.success(response.data.message);
+        const payload = { ...form, amount: Number(form.amount) };
 
-            setForm({
-                title: "",
-                amount: 0,
-                category: "",
-            });
-
-            if (onExpenseAdded) onExpenseAdded();
-        } catch (err) {
-            toast.error(err.response.data.message || "Network Error! Please try later");
-        }
+        addExpense(payload);
+        setForm({
+            title: "",
+            amount: 0,
+            category: "",
+        });
     }
 
     return (

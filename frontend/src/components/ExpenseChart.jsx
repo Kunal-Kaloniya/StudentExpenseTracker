@@ -1,6 +1,9 @@
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { useExpenseStore } from '../store/useExpenseStore.js';
 
-export default function ExpenseChart({ expenses }) {
+export default function ExpenseChart() {
+
+    const expenses = useExpenseStore((state) => state.expenses);
 
     const totalSpend = expenses.reduce((sum, item) => sum + Number(item.amount), 0);
 

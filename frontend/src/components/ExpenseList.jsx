@@ -1,4 +1,19 @@
-export default function ExpenseList({ expenses, onDeleteExpense }) {
+import { useShallow } from "zustand/react/shallow";
+import { useExpenseStore } from "../store/useExpenseStore";
+
+export default function ExpenseList() {
+    const { expenses, getAllExpenses, deleteExpense } = useExpenseStore(
+        useShallow((state) => ({
+            expenses: state.expenses,
+            getAllExpenses: state.getAllExpenses,
+            deleteExpense: state.deleteExpense
+        }))
+    );
+
+    const handleDeleteExpense = async (id) => {
+        deleteExpense(id);
+    }
+
     return (
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="p-6 border-b border-gray-100 flex justify-between items-center">
@@ -18,7 +33,7 @@ export default function ExpenseList({ expenses, onDeleteExpense }) {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
-                        {expenses.length !== 0 && expenses.map((expense) => (
+                        {expenses.length > 0 ? (expenses.map((expense) => (
                             <tr key={expense._id} className="hover:bg-gray-50 transition-colors">
                                 <td className="px-6 py-4 font-medium text-gray-800">{expense.title}</td>
                                 <td className="px-6 py-4">
@@ -26,18 +41,24 @@ export default function ExpenseList({ expenses, onDeleteExpense }) {
                                         {expense.category}
                                     </span>
                                 </td>
-                                <td className="px-6 py-4 text-sm text-gray-500">{new Date(expense.date).toLocaleDateString()}</td>
+                                <td className="px-6 py-4 text-sm text-gray-500">{expense.date ? new Date(expense.date).toLocaleDateString() : 'N/A'}</td>
                                 <td className="px-6 py-4 font-semibold text-gray-900">₹{expense.amount}</td>
                                 <td className="px-6 py-4 text-center">
                                     <button
                                         className="text-red-500 hover:text-red-700 text-sm font-medium transition-colors"
-                                        onClick={() => onDeleteExpense(expense._id)}
+                                        onClick={() => handleDeleteExpense(expense._id)}
                                     >
                                         Delete
                                     </button>
                                 </td>
                             </tr>
-                        ))}
+                        ))) : (
+                            <tr>
+                                <td colSpan={5} className="px-6 py-10 text-center text-gray-500">
+                                    No expenses found. Start adding some!
+                                </td>
+                            </tr>
+                        )}
                     </tbody>
                 </table>
             </div>
