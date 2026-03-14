@@ -5,8 +5,8 @@ import { addExpense, deleteExpense, fetchExpenses } from "../controller/expenses
 const router = express.Router();
 router.use(verifyToken);
 
-router.post('/add-expense', addExpense);
-router.delete('/delete-expense/:expenseId', deleteExpense);
-router.get('/fetch-expense', fetchExpenses);
+router.get('/', fetchExpenses);
+router.post('/', addExpense);
+router.delete('/:expenseId', deleteExpense);
 
 export default router;
