@@ -4,10 +4,12 @@ import cors from "cors";
 import { connectDB } from "./database/db.js";
 import expenseRoutes from "./routes/expenses.routes.js";
 import authRoutes from "./routes/auth.routes.js";
+import cookieParser from "cookie-parser";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.use(cookieParser());
 app.use(express.json());
 app.use(cors({ origin: "http://localhost:5173" }));
 
