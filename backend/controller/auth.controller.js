@@ -6,7 +6,7 @@ const generateToken = (user) => {
     return jwt.sign(user, process.env.JWT_SECRET, { expiresIn: '2d' });
 }
 
-const createUser = async (req, res) => {
+const login = async (req, res) => {
     try {
         const { username } = req.body;
         if (!username) return res.status(401).json({ message: "Please provide a username" });
@@ -29,7 +29,8 @@ const createUser = async (req, res) => {
             maxAge: 2 * 24 * 60 * 60 * 1000
         }).status(201).json({
             message,
-            success: true
+            success: true,
+            username
         });
     } catch (err) {
         res.status(500).json({ message: "Server error! Unable to create user", success: false });
@@ -52,4 +53,4 @@ const deleteUser = async (req, res) => {
     }
 }
 
-export { createUser, deleteUser };
+export { login, deleteUser };
