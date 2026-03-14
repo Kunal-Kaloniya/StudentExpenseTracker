@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import { useAuthStore } from "../context/useAuthStore.js";
+import { useAuthStore } from "../store/useAuthStore.js";
 import NavBar from "./NavBar.jsx";
 import Login from "./Login.jsx";
 

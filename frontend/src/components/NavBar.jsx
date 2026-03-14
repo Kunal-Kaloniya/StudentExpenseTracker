@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { IoPersonCircleOutline } from "react-icons/io5";
-import { useAuthStore } from "../context/useAuthStore";
+import { useAuthStore } from "../store/useAuthStore";
 import { useShallow } from "zustand/react/shallow";
 import { useState } from "react";
 
